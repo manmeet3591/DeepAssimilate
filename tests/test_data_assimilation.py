@@ -1,11 +1,4 @@
 
----
-
-5. **Testing**
-Write tests in the `tests` directory.
-
-#### `tests/test_data_assimilation.py`
-```python
 import unittest
 import numpy as np
 from data_assimilation_package import DataAssimilation
