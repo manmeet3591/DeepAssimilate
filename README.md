@@ -8,7 +8,7 @@ pip install .
 ```
 ## Usage
 ```
-from data_assimilation_package import DataAssimilation
+from deepassimilate import DataAssimilation
 
 assimilator = DataAssimilation()
 result = assimilator.assimilate(gridded_data, station_data)
