@@ -804,7 +804,7 @@ loaded_diffusion_model.load_state_dict(torch.load(diffusion_model_save_path))
 loaded_diffusion_model.eval()
 print(f"Model loaded from {diffusion_model_save_path}")
 
-# Ensure the model is in evaluation mode
+# Set model to evaluation mode
 model.eval()
 
 # Collect all predictions
@@ -812,19 +812,38 @@ all_inputs = []
 all_predictions = []
 all_targets = []
 
+# Scheduler for noise handling
+scheduler.set_timesteps(num_inference_steps=1000)  # Ensure proper timestep range for inference
+
 # Loop through the training data
 with torch.no_grad():
     for lr, hr, _ in train_dataloader:
-        lr = lr.to(device)  # Move input to device (GPU or CPU)
+        lr = lr.to(device)  # Move input to device
         hr = hr.to(device)  # Move target to device
 
-        # Perform the forward pass to get predictions
-        sr = model(lr)
+        # Initialize predictions for the batch
+        sr_batch = []
 
-        # Collect the inputs and predictions
-        all_inputs.append(lr.cpu().numpy())  # Convert back to CPU for consistency
-        all_predictions.append(sr.cpu().numpy())  # Convert back to CPU for consistency
-        all_targets.append(hr.cpu().numpy())  # Convert back to CPU for consistency
+        # Start from pure noise
+        noisy_images = torch.randn_like(hr)
+
+        for t in reversed(scheduler.timesteps):  # Loop through timesteps in reverse order
+            # Concatenate low-resolution input with noisy images
+            x_t = torch.cat((noisy_images, lr), dim=1)
+
+            # Predict noise using the model
+            noise_pred = model(x_t, t).sample
+
+            # Perform the scheduler step
+            noisy_images = scheduler.step(noise_pred, t, noisy_images).prev_sample
+
+        # Append the final denoised images to the batch predictions
+        sr_batch.append(noisy_images)
+
+        # Collect the inputs, predictions, and targets
+        all_inputs.append(lr.cpu().numpy())  # Convert back to CPU
+        all_predictions.append(torch.cat(sr_batch, dim=0).cpu().numpy())  # Convert back to CPU
+        all_targets.append(hr.cpu().numpy())  # Convert back to CPU
 
 # Concatenate all inputs, predictions, and targets
 all_inputs = np.concatenate(all_inputs, axis=0)
