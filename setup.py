@@ -1,21 +1,22 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="data_assimilation_package",
+    name="DeepAssimilate",
     version="0.1.0",
-    description="Assimilate station data into gridded data using deep learning.",
+    description="Deep learning framework for assimilating data with deep learning.",
     author="Your Name",
     author_email="your.email@example.com",
-    url="https://github.com/your_username/data_assimilation_package",
     packages=find_packages(),
     install_requires=[
-        "torch>=1.0.0",
+        "torch>=1.7.1",
         "numpy",
         "opencv-python",
-        "matplotlib",
+        "scikit-learn"
     ],
+    python_requires=">=3.6",
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
     ],
 )
