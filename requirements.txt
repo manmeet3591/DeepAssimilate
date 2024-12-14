@@ -3,3 +3,4 @@ numpy
 opencv-python
 scikit-learn
 pytest
+torchvision
