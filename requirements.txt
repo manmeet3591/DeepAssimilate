@@ -5,3 +5,4 @@ scikit-learn
 pytest
 torchvision
 tensorboard
+diffusers
