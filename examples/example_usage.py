@@ -756,6 +756,8 @@ val_dataset = ncDataset(x_val_patches, y_val_patches, z_val_patches)
 train_dataloader = DataLoader(train_dataset, batch_size=20, shuffle=True)
 val_dataloader = DataLoader(val_dataset, batch_size=20, shuffle=True)
 
+# Path to save the trained model
+diffusion_model_save_path = "best_diffusion_model.pth"
 # Main Training Loop
 for epoch in range(1, num_epochs + 1):
     train_loss, val_loss, train_loss_z, val_loss_z = train(
@@ -772,6 +774,9 @@ for epoch in range(1, num_epochs + 1):
         best_val_loss = val_loss
         best_model = deepcopy(model)
         counter = 0
+        # Save the best model
+        torch.save(best_model.state_dict(), diffusion_model_save_path)
+        print(f"Best model saved at epoch {epoch}")
     else:
         counter += 1
 
@@ -780,3 +785,53 @@ for epoch in range(1, num_epochs + 1):
         break
 
 print("Training Complete.")
+
+# Save the final model after training
+torch.save(model.state_dict(), diffusion_model_save_path)
+print(f"Final model saved to {diffusion_model_save_path}")
+
+# Load the trained model
+loaded_diffusion_model = UNet2DModel(
+    sample_size=patch_size,
+    in_channels=2,
+    out_channels=1,
+    layers_per_block=4,
+    block_out_channels=(64, 128, 256, 512),
+).to(device)
+
+# Load weights into the model
+loaded_diffusion_model.load_state_dict(torch.load(diffusion_model_save_path))
+loaded_diffusion_model.eval()
+print(f"Model loaded from {diffusion_model_save_path}")
+
+# Ensure the model is in evaluation mode
+model.eval()
+
+# Collect all predictions
+all_inputs = []
+all_predictions = []
+all_targets = []
+
+# Loop through the training data
+with torch.no_grad():
+    for lr, hr, _ in train_dataloader:
+        lr = lr.to(device)  # Move input to device (GPU or CPU)
+        hr = hr.to(device)  # Move target to device
+
+        # Perform the forward pass to get predictions
+        sr = model(lr)
+
+        # Collect the inputs and predictions
+        all_inputs.append(lr.cpu().numpy())  # Convert back to CPU for consistency
+        all_predictions.append(sr.cpu().numpy())  # Convert back to CPU for consistency
+        all_targets.append(hr.cpu().numpy())  # Convert back to CPU for consistency
+
+# Concatenate all inputs, predictions, and targets
+all_inputs = np.concatenate(all_inputs, axis=0)
+all_predictions = np.concatenate(all_predictions, axis=0)
+all_targets = np.concatenate(all_targets, axis=0)
+
+# Print the shapes
+print("Shape of Training Input (Low-Resolution):", all_inputs.shape)
+print("Shape of Predicted Target (Super-Resolved):", all_predictions.shape)
+print("Shape of Ground Truth Target (High-Resolution):", all_targets.shape)
