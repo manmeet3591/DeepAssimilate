@@ -4,3 +4,4 @@ opencv-python
 scikit-learn
 pytest
 torchvision
+tensorboard
