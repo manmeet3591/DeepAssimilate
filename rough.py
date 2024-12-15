@@ -13,20 +13,20 @@ import torch.optim as optim
 import numpy as np
 import cv2
 
-# SRCNN model
-class SRCNN(nn.Module):
-    def __init__(self):
-        super(SRCNN, self).__init__()
-        self.conv1 = nn.Conv2d(1, 64, kernel_size=9, padding=4)
-        self.conv2 = nn.Conv2d(64, 32, kernel_size=1, padding=0)
-        self.conv3 = nn.Conv2d(32, 1, kernel_size=5, padding=2)
-        self.relu = nn.ReLU()
+# # SRCNN model
+# class SRCNN(nn.Module):
+#     def __init__(self):
+#         super(SRCNN, self).__init__()
+#         self.conv1 = nn.Conv2d(1, 64, kernel_size=9, padding=4)
+#         self.conv2 = nn.Conv2d(64, 32, kernel_size=1, padding=0)
+#         self.conv3 = nn.Conv2d(32, 1, kernel_size=5, padding=2)
+#         self.relu = nn.ReLU()
 
-    def forward(self, x):
-        x = self.relu(self.conv1(x))
-        x = self.relu(self.conv2(x))
-        x = self.conv3(x)
-        return x
+#     def forward(self, x):
+#         x = self.relu(self.conv1(x))
+#         x = self.relu(self.conv2(x))
+#         x = self.conv3(x)
+#         return x
 
 # Function to generate random noise images
 def generate_random_image(seed, img_size=(256, 256)):
@@ -193,19 +193,19 @@ print(np.isnan(stations_image_resized).sum())
 print(stations_image.shape)
 print(stations_image_resized.shape)
 
-# Fixing the issue by removing .numpy() for numpy arrays, keeping it only for PyTorch tensors
-import matplotlib.pyplot as plt
-# Updated function to handle both numpy arrays and PyTorch tensors
-def visualize_channel(image_tensor, channel_index, title):
-    # Check if it's a PyTorch tensor and convert it to a numpy array if necessary
-    if isinstance(image_tensor, torch.Tensor):
-        image_channel = image_tensor[channel_index].numpy()
-    else:
-        image_channel = image_tensor[channel_index]
-    plt.imshow(image_channel, cmap='gray')
-    plt.title(title)
-    plt.axis('off')
-    plt.show()
+# # Fixing the issue by removing .numpy() for numpy arrays, keeping it only for PyTorch tensors
+# import matplotlib.pyplot as plt
+# # Updated function to handle both numpy arrays and PyTorch tensors
+# def visualize_channel(image_tensor, channel_index, title):
+#     # Check if it's a PyTorch tensor and convert it to a numpy array if necessary
+#     if isinstance(image_tensor, torch.Tensor):
+#         image_channel = image_tensor[channel_index].numpy()
+#     else:
+#         image_channel = image_tensor[channel_index]
+#     plt.imshow(image_channel, cmap='gray')
+#     plt.title(title)
+#     plt.axis('off')
+#     plt.show()
 
 # Convert images to PyTorch tensors
 input_image_4x_upscaled_2x_tensor = torch.tensor(input_image_4x_upscaled_2x, dtype=torch.float32)
@@ -223,24 +223,24 @@ print(torch.isnan(stations_image_resized_tensor).sum())
 import matplotlib.pyplot as plt
 import torch
 
-# Updated function to handle both numpy arrays and PyTorch tensors
-def visualize_channel(ax, image_tensor, channel_index, title):
-    # Check if it's a PyTorch tensor and convert it to a numpy array if necessary
-    if isinstance(image_tensor, torch.Tensor):
-        image_channel = image_tensor[channel_index].numpy()
-    else:
-        image_channel = image_tensor[channel_index]
-    ax.imshow(image_channel, cmap='gray')
-    ax.set_title(title)
-    ax.axis('off')
+# # Updated function to handle both numpy arrays and PyTorch tensors
+# def visualize_channel(ax, image_tensor, channel_index, title):
+#     # Check if it's a PyTorch tensor and convert it to a numpy array if necessary
+#     if isinstance(image_tensor, torch.Tensor):
+#         image_channel = image_tensor[channel_index].numpy()
+#     else:
+#         image_channel = image_tensor[channel_index]
+#     ax.imshow(image_channel, cmap='gray')
+#     ax.set_title(title)
+#     ax.axis('off')
 
-# Convert images to PyTorch tensors
-input_image_4x_upscaled_2x_tensor = torch.tensor(input_image_4x_upscaled_2x, dtype=torch.float32)
-target_image_2x_tensor = torch.tensor(target_image_2x, dtype=torch.float32)
-stations_image_resized_tensor = torch.tensor(stations_image_resized, dtype=torch.float32)
+# # Convert images to PyTorch tensors
+# input_image_4x_upscaled_2x_tensor = torch.tensor(input_image_4x_upscaled_2x, dtype=torch.float32)
+# target_image_2x_tensor = torch.tensor(target_image_2x, dtype=torch.float32)
+# stations_image_resized_tensor = torch.tensor(stations_image_resized, dtype=torch.float32)
 
-# Create subplots
-fig, axs = plt.subplots(1, 4, figsize=(20, 5))  # 1 row, 4 columns for each image
+# # Create subplots
+# fig, axs = plt.subplots(1, 4, figsize=(20, 5))  # 1 row, 4 columns for each image
 
 # Visualize the first channel (e.g., Red channel) from each tensor
 # visualize_channel(axs[0], original_image, 0, 'Original High Resolution Image')
@@ -328,19 +328,19 @@ class ncDataset(Dataset):
         return len(self.data)
 
 # SRCNN Model definition remains the same
-class SRCNN(nn.Module):
-    def __init__(self):
-        super(SRCNN, self).__init__()
-        self.conv1 = nn.Conv2d(1, 64, kernel_size=9, padding=4)
-        self.conv2 = nn.Conv2d(64, 32, kernel_size=1, padding=0)
-        self.conv3 = nn.Conv2d(32, 1, kernel_size=5, padding=2)
-        self.relu = nn.ReLU()
+# class SRCNN(nn.Module):
+#     def __init__(self):
+#         super(SRCNN, self).__init__()
+#         self.conv1 = nn.Conv2d(1, 64, kernel_size=9, padding=4)
+#         self.conv2 = nn.Conv2d(64, 32, kernel_size=1, padding=0)
+#         self.conv3 = nn.Conv2d(32, 1, kernel_size=5, padding=2)
+#         self.relu = nn.ReLU()
 
-    def forward(self, x):
-        x = self.relu(self.conv1(x))
-        x = self.relu(self.conv2(x))
-        x = self.conv3(x)
-        return x
+#     def forward(self, x):
+#         x = self.relu(self.conv1(x))
+#         x = self.relu(self.conv2(x))
+#         x = self.conv3(x)
+#         return x
 
 # def masked_mse_loss(output, target):
 #     # Create a mask for non-NaN values in the target tensor
@@ -374,51 +374,51 @@ def masked_mse_loss(output, target):
 
 
 # Modified train function to include the masked MSE loss for stations_image_resized_tensor
-def train(model, train_dataloader, val_dataloader, criterion, optimizer, device):
-    model.train()
-    train_loss = 0.0
-    for batch in train_dataloader:
-        lr, hr, station = batch
-        lr, hr, station = lr.to(device), hr.to(device), station.to(device)
-        optimizer.zero_grad()
+# def train(model, train_dataloader, val_dataloader, criterion, optimizer, device):
+#     model.train()
+#     train_loss = 0.0
+#     for batch in train_dataloader:
+#         lr, hr, station = batch
+#         lr, hr, station = lr.to(device), hr.to(device), station.to(device)
+#         optimizer.zero_grad()
 
-        sr = model(lr)
+#         sr = model(lr)
 
-        # First loss: Comparing model output with the original high-resolution image
-        loss1 = criterion(sr, hr)
+#         # First loss: Comparing model output with the original high-resolution image
+#         loss1 = criterion(sr, hr)
 
-        # Second loss: Using masked MSE loss to ignore NaNs in the stations_image_resized_tensor
-        loss2 = masked_mse_loss(sr, station)
-        # print('loss2 = ', loss2)
-        # Combine the losses (you can adjust the weights as needed)
-        total_loss = loss1 + loss2
+#         # Second loss: Using masked MSE loss to ignore NaNs in the stations_image_resized_tensor
+#         loss2 = masked_mse_loss(sr, station)
+#         # print('loss2 = ', loss2)
+#         # Combine the losses (you can adjust the weights as needed)
+#         total_loss = loss1 + loss2
 
-        total_loss.backward()
-        optimizer.step()
-        train_loss += total_loss.item()
+#         total_loss.backward()
+#         optimizer.step()
+#         train_loss += total_loss.item()
 
-    train_loss /= len(train_dataloader)
+#     train_loss /= len(train_dataloader)
 
-    # Validation
-    model.eval()
-    val_loss = 0.0
-    with torch.no_grad():
-        for batch in val_dataloader:
-            lr, hr, station = batch
-            lr, hr, station = lr.to(device), hr.to(device), station.to(device)
+#     # Validation
+#     model.eval()
+#     val_loss = 0.0
+#     with torch.no_grad():
+#         for batch in val_dataloader:
+#             lr, hr, station = batch
+#             lr, hr, station = lr.to(device), hr.to(device), station.to(device)
 
-            sr = model(lr)
+#             sr = model(lr)
 
-            # Validation losses
-            val_loss1 = criterion(sr, hr)
-            val_loss2 = masked_mse_loss(sr, station)
+#             # Validation losses
+#             val_loss1 = criterion(sr, hr)
+#             val_loss2 = masked_mse_loss(sr, station)
 
-            total_val_loss = val_loss1 + val_loss2
-            val_loss += total_val_loss.item()
+#             total_val_loss = val_loss1 + val_loss2
+#             val_loss += total_val_loss.item()
 
-    val_loss /= len(val_dataloader)
+#     val_loss /= len(val_dataloader)
 
-    return train_loss, val_loss
+#     return train_loss, val_loss
 
 x_train_patches = input_image_4x_upscaled_2x_tensor
 y_train_patches = target_image_2x_tensor
@@ -453,86 +453,86 @@ train_dataloader = DataLoader(train_dataset, batch_size=20, shuffle=True)
 val_dataloader = DataLoader(val_dataset, batch_size=20, shuffle=True)
 
 from torch.utils.tensorboard import SummaryWriter
-writer = SummaryWriter("runs/srcnn")
+# writer = SummaryWriter("runs/srcnn")
 
 # Initialize the model, loss function, and optimizer
 device = 'cuda'
-model = SRCNN().to(device)
-criterion = nn.MSELoss()
-optimizer = optim.Adam(model.parameters(), lr=0.001)
+# model = SRCNN().to(device)
+# criterion = nn.MSELoss()
+# optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-# Training and validation loop with early stopping
-num_epochs = 1000
-print_interval = 10
-patience = 500
-best_val_loss = float('inf')
-counter = 0
-best_model = None
-is_train = True
+# # Training and validation loop with early stopping
+# num_epochs = 1000
+# print_interval = 10
+# patience = 500
+# best_val_loss = float('inf')
+# counter = 0
+# best_model = None
+# is_train = True
 
-if is_train:
-    for epoch in range(1, num_epochs + 1):
-        train_loss, val_loss = train(model, train_dataloader, val_dataloader, criterion, optimizer, device)
+# if is_train:
+#     for epoch in range(1, num_epochs + 1):
+#         train_loss, val_loss = train(model, train_dataloader, val_dataloader, criterion, optimizer, device)
 
-        # Log losses to TensorBoard
-        writer.add_scalars("Loss", {"Train": train_loss, "Validation": val_loss}, epoch)
+#         # Log losses to TensorBoard
+#         writer.add_scalars("Loss", {"Train": train_loss, "Validation": val_loss}, epoch)
 
-        if val_loss < best_val_loss:
-            best_val_loss = val_loss
-            best_model = deepcopy(model)
-            counter = 0
-        else:
-            counter += 1
+#         if val_loss < best_val_loss:
+#             best_val_loss = val_loss
+#             best_model = deepcopy(model)
+#             counter = 0
+#         else:
+#             counter += 1
 
-        if epoch % print_interval == 0:
-            print(f"Epoch [{epoch}/{num_epochs}] - Train Loss: {train_loss:.4f}, Validation Loss: {val_loss:.4f}")
+#         if epoch % print_interval == 0:
+#             print(f"Epoch [{epoch}/{num_epochs}] - Train Loss: {train_loss:.4f}, Validation Loss: {val_loss:.4f}")
 
-        if counter >= patience:
-            print("Early stopping triggered.")
-            break
+#         if counter >= patience:
+#             print("Early stopping triggered.")
+#             break
 
-    writer.close()
+#     writer.close()
 
-# Save the best model
-model_save_path = "best_model_srcnn.pth"
-if is_train:
-    torch.save(best_model.state_dict(), model_save_path)
+# # Save the best model
+# model_save_path = "best_model_srcnn.pth"
+# if is_train:
+#     torch.save(best_model.state_dict(), model_save_path)
 
-# Load the best model
-loaded_model = SRCNN().to(device)
-loaded_model.load_state_dict(torch.load(model_save_path))
-loaded_model.eval()
+# # Load the best model
+# loaded_model = SRCNN().to(device)
+# loaded_model.load_state_dict(torch.load(model_save_path))
+# loaded_model.eval()
 
-"""# Performance on test data"""
+# """# Performance on test data"""
 
-import torch
+# import torch
 
-def evaluate(model, test_dataloader, criterion, device):
-    model.eval()
-    test_loss = 0.0
-    with torch.no_grad():
-        for batch in test_dataloader:
-            lr, hr, station = batch
-            lr, hr, station = lr.to(device), hr.to(device), station.to(device)
+# def evaluate(model, test_dataloader, criterion, device):
+#     model.eval()
+#     test_loss = 0.0
+#     with torch.no_grad():
+#         for batch in test_dataloader:
+#             lr, hr, station = batch
+#             lr, hr, station = lr.to(device), hr.to(device), station.to(device)
 
-            sr = model(lr)
+#             sr = model(lr)
 
-            # Test loss components
-            test_loss1 = criterion(sr, hr)  # Compare to target high-resolution image
-            test_loss2 = masked_mse_loss(sr, station)  # Masked MSE loss for stations image
+#             # Test loss components
+#             test_loss1 = criterion(sr, hr)  # Compare to target high-resolution image
+#             test_loss2 = masked_mse_loss(sr, station)  # Masked MSE loss for stations image
 
-            total_test_loss = test_loss1 + test_loss2
-            test_loss += total_test_loss.item()
+#             total_test_loss = test_loss1 + test_loss2
+#             test_loss += total_test_loss.item()
 
-    test_loss /= len(test_dataloader)
-    return test_loss
+#     test_loss /= len(test_dataloader)
+#     return test_loss
 
 # Test dataset DataLoader
 test_dataloader = DataLoader(test_dataset, batch_size=20, shuffle=False)
 
-# Evaluate the model on the test dataset
-test_loss = evaluate(loaded_model, test_dataloader, criterion, device)
-print(f"Test Loss: {test_loss:.4f}")
+# # Evaluate the model on the test dataset
+# test_loss = evaluate(loaded_model, test_dataloader, criterion, device)
+# print(f"Test Loss: {test_loss:.4f}")
 
 from sklearn.metrics import r2_score
 
@@ -558,9 +558,9 @@ def calculate_r2(model, test_dataloader, device):
     # Compute R²
     return r2_score(all_hr, all_sr)
 
-# Calculate R² for the test dataset
-r2 = calculate_r2(loaded_model, test_dataloader, device)
-print(f"R² Score: {r2:.4f}")
+# # Calculate R² for the test dataset
+# r2 = calculate_r2(loaded_model, test_dataloader, device)
+# print(f"R² Score: {r2:.4f}")
 
 """# Diffusion"""
 
@@ -756,6 +756,8 @@ val_dataset = ncDataset(x_val_patches, y_val_patches, z_val_patches)
 train_dataloader = DataLoader(train_dataset, batch_size=20, shuffle=True)
 val_dataloader = DataLoader(val_dataset, batch_size=20, shuffle=True)
 
+# Path to save the trained model
+diffusion_model_save_path = "best_diffusion_model.pth"
 # Main Training Loop
 for epoch in range(1, num_epochs + 1):
     train_loss, val_loss, train_loss_z, val_loss_z = train(
@@ -772,6 +774,9 @@ for epoch in range(1, num_epochs + 1):
         best_val_loss = val_loss
         best_model = deepcopy(model)
         counter = 0
+        # Save the best model
+        torch.save(best_model.state_dict(), diffusion_model_save_path)
+        print(f"Best model saved at epoch {epoch}")
     else:
         counter += 1
 
@@ -781,3 +786,71 @@ for epoch in range(1, num_epochs + 1):
 
 print("Training Complete.")
 
+# Save the final model after training
+torch.save(model.state_dict(), diffusion_model_save_path)
+print(f"Final model saved to {diffusion_model_save_path}")
+
+# Load the trained model
+loaded_diffusion_model = UNet2DModel(
+    sample_size=patch_size,
+    in_channels=2,
+    out_channels=1,
+    layers_per_block=4,
+    block_out_channels=(64, 128, 256, 512),
+).to(device)
+
+# Load weights into the model
+loaded_diffusion_model.load_state_dict(torch.load(diffusion_model_save_path))
+loaded_diffusion_model.eval()
+print(f"Model loaded from {diffusion_model_save_path}")
+
+# Set model to evaluation mode
+model.eval()
+
+# Collect all predictions
+all_inputs = []
+all_predictions = []
+all_targets = []
+
+# Scheduler for noise handling
+scheduler.set_timesteps(num_inference_steps=1000)  # Ensure proper timestep range for inference
+
+# Loop through the training data
+with torch.no_grad():
+    for lr, hr, _ in train_dataloader:
+        lr = lr.to(device)  # Move input to device
+        hr = hr.to(device)  # Move target to device
+
+        # Initialize predictions for the batch
+        sr_batch = []
+
+        # Start from pure noise
+        noisy_images = torch.randn_like(hr)
+
+        for t in reversed(scheduler.timesteps):  # Loop through timesteps in reverse order
+            # Concatenate low-resolution input with noisy images
+            x_t = torch.cat((noisy_images, lr), dim=1)
+
+            # Predict noise using the model
+            noise_pred = model(x_t, t).sample
+
+            # Perform the scheduler step
+            noisy_images = scheduler.step(noise_pred, t, noisy_images).prev_sample
+
+        # Append the final denoised images to the batch predictions
+        sr_batch.append(noisy_images)
+
+        # Collect the inputs, predictions, and targets
+        all_inputs.append(lr.cpu().numpy())  # Convert back to CPU
+        all_predictions.append(torch.cat(sr_batch, dim=0).cpu().numpy())  # Convert back to CPU
+        all_targets.append(hr.cpu().numpy())  # Convert back to CPU
+
+# Concatenate all inputs, predictions, and targets
+all_inputs = np.concatenate(all_inputs, axis=0)
+all_predictions = np.concatenate(all_predictions, axis=0)
+all_targets = np.concatenate(all_targets, axis=0)
+
+# Print the shapes
+print("Shape of Training Input (Low-Resolution):", all_inputs.shape)
+print("Shape of Predicted Target (Super-Resolved):", all_predictions.shape)
+print("Shape of Ground Truth Target (High-Resolution):", all_targets.shape)
