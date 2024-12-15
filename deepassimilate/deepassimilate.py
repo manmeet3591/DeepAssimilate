@@ -2,7 +2,7 @@ from .models import SRCNN
 from .utils import preprocess_data, masked_mse_loss, train_model
 import torch
 
-class DataAssimilation:
+class deepassimilate:
     def __init__(self, device='cuda'):
         self.device = device
         self.model = SRCNN().to(device)
