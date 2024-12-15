@@ -20,21 +20,22 @@ from sklearn.metrics import r2_score
 
 from utils import *
 
-# Example usage
+# Generate random input image with multiple channels
 seed = 42
 img_size = (256, 256)
-
-# Generate random input image
-original_image = generate_random_image(seed, img_size)
+num_channels = 100  # For RGB or more channels if needed
+original_image = generate_random_image(seed, img_size, num_channels)
 
 # Input Image: 4x downscaled and 2x upscaled
 input_image_4x = bicubic_downscale(original_image, 4)
-input_image_4x_upscaled_2x = bicubic_upscale(input_image_4x, (int(original_image.shape[0]/2), int(original_image.shape[1]/2)))
+input_image_4x_upscaled_2x = bicubic_upscale(input_image_4x, (original_image.shape[2] // 2, original_image.shape[1] // 2))
 
 # Target Image: 2x downscaled
 target_image_2x = bicubic_downscale(original_image, 2)
 
-print(input_image_4x_upscaled_2x.shape, target_image_2x.shape)
+print("Input image (4x upscaled to 2x) shape:", input_image_4x_upscaled_2x.shape)
+print("Target image (2x downscaled) shape:", target_image_2x.shape)
+
 
 
 # Create "stations" image (ground truth with 90% missing data)
