@@ -22,3 +22,7 @@ def create_stations_image(original_image, gap_ratio=0.9):
     stations_image = original_image.copy()
     stations_image[mask] = np.nan  # Mask out 90% of the data
     return stations_image, mask  # Also return the mask for loss calculation
+
+def nearest_neighbor_resize(image, target_size):
+    resized_image = cv2.resize(image, target_size, interpolation=cv2.INTER_NEAREST)
+    return resized_image
