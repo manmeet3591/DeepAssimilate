@@ -180,9 +180,6 @@ def torch_nanmax(tensor):
 
     # Apply the max function
     return torch.max(tensor_no_nan)
-# torch_nanmax(stations_image_resized_tensor)
-
-# ~torch.isnan(stations_image_resized_tensor[0,:,:].float())
 
 print(stations_image_resized_tensor.dtype)
 
@@ -215,31 +212,6 @@ class ncDataset(Dataset):
     def __len__(self):
         return len(self.data)
 
-# SRCNN Model definition remains the same
-# class SRCNN(nn.Module):
-#     def __init__(self):
-#         super(SRCNN, self).__init__()
-#         self.conv1 = nn.Conv2d(1, 64, kernel_size=9, padding=4)
-#         self.conv2 = nn.Conv2d(64, 32, kernel_size=1, padding=0)
-#         self.conv3 = nn.Conv2d(32, 1, kernel_size=5, padding=2)
-#         self.relu = nn.ReLU()
-
-#     def forward(self, x):
-#         x = self.relu(self.conv1(x))
-#         x = self.relu(self.conv2(x))
-#         x = self.conv3(x)
-#         return x
-
-# def masked_mse_loss(output, target):
-#     # Create a mask for non-NaN values in the target tensor
-#     mask = ~torch.isnan(target)
-
-#     # Apply the mask to both the output and target
-#     masked_output = output[mask]
-#     masked_target = target[mask]
-
-#     # Compute MSE loss only on valid (non-NaN) elements
-#     return nn.functional.mse_loss(masked_output, masked_target)
 
 def masked_mse_loss(output, target):
     # Create a mask for non-NaN values in both the target and output tensors
@@ -261,52 +233,6 @@ def masked_mse_loss(output, target):
     return nn.functional.mse_loss(masked_output, masked_target)
 
 
-# Modified train function to include the masked MSE loss for stations_image_resized_tensor
-# def train(model, train_dataloader, val_dataloader, criterion, optimizer, device):
-#     model.train()
-#     train_loss = 0.0
-#     for batch in train_dataloader:
-#         lr, hr, station = batch
-#         lr, hr, station = lr.to(device), hr.to(device), station.to(device)
-#         optimizer.zero_grad()
-
-#         sr = model(lr)
-
-#         # First loss: Comparing model output with the original high-resolution image
-#         loss1 = criterion(sr, hr)
-
-#         # Second loss: Using masked MSE loss to ignore NaNs in the stations_image_resized_tensor
-#         loss2 = masked_mse_loss(sr, station)
-#         # print('loss2 = ', loss2)
-#         # Combine the losses (you can adjust the weights as needed)
-#         total_loss = loss1 + loss2
-
-#         total_loss.backward()
-#         optimizer.step()
-#         train_loss += total_loss.item()
-
-#     train_loss /= len(train_dataloader)
-
-#     # Validation
-#     model.eval()
-#     val_loss = 0.0
-#     with torch.no_grad():
-#         for batch in val_dataloader:
-#             lr, hr, station = batch
-#             lr, hr, station = lr.to(device), hr.to(device), station.to(device)
-
-#             sr = model(lr)
-
-#             # Validation losses
-#             val_loss1 = criterion(sr, hr)
-#             val_loss2 = masked_mse_loss(sr, station)
-
-#             total_val_loss = val_loss1 + val_loss2
-#             val_loss += total_val_loss.item()
-
-#     val_loss /= len(val_dataloader)
-
-#     return train_loss, val_loss
 
 x_train_patches = input_image_4x_upscaled_2x_tensor
 y_train_patches = target_image_2x_tensor
@@ -341,86 +267,9 @@ train_dataloader = DataLoader(train_dataset, batch_size=20, shuffle=True)
 val_dataloader = DataLoader(val_dataset, batch_size=20, shuffle=True)
 
 from torch.utils.tensorboard import SummaryWriter
-# writer = SummaryWriter("runs/srcnn")
-
-# Initialize the model, loss function, and optimizer
-device = 'cuda'
-# model = SRCNN().to(device)
-# criterion = nn.MSELoss()
-# optimizer = optim.Adam(model.parameters(), lr=0.001)
-
-# # Training and validation loop with early stopping
-# num_epochs = 1000
-# print_interval = 10
-# patience = 500
-# best_val_loss = float('inf')
-# counter = 0
-# best_model = None
-# is_train = True
-
-# if is_train:
-#     for epoch in range(1, num_epochs + 1):
-#         train_loss, val_loss = train(model, train_dataloader, val_dataloader, criterion, optimizer, device)
-
-#         # Log losses to TensorBoard
-#         writer.add_scalars("Loss", {"Train": train_loss, "Validation": val_loss}, epoch)
-
-#         if val_loss < best_val_loss:
-#             best_val_loss = val_loss
-#             best_model = deepcopy(model)
-#             counter = 0
-#         else:
-#             counter += 1
-
-#         if epoch % print_interval == 0:
-#             print(f"Epoch [{epoch}/{num_epochs}] - Train Loss: {train_loss:.4f}, Validation Loss: {val_loss:.4f}")
-
-#         if counter >= patience:
-#             print("Early stopping triggered.")
-#             break
-
-#     writer.close()
-
-# # Save the best model
-# model_save_path = "best_model_srcnn.pth"
-# if is_train:
-#     torch.save(best_model.state_dict(), model_save_path)
-
-# # Load the best model
-# loaded_model = SRCNN().to(device)
-# loaded_model.load_state_dict(torch.load(model_save_path))
-# loaded_model.eval()
-
-# """# Performance on test data"""
-
-# import torch
-
-# def evaluate(model, test_dataloader, criterion, device):
-#     model.eval()
-#     test_loss = 0.0
-#     with torch.no_grad():
-#         for batch in test_dataloader:
-#             lr, hr, station = batch
-#             lr, hr, station = lr.to(device), hr.to(device), station.to(device)
-
-#             sr = model(lr)
-
-#             # Test loss components
-#             test_loss1 = criterion(sr, hr)  # Compare to target high-resolution image
-#             test_loss2 = masked_mse_loss(sr, station)  # Masked MSE loss for stations image
-
-#             total_test_loss = test_loss1 + test_loss2
-#             test_loss += total_test_loss.item()
-
-#     test_loss /= len(test_dataloader)
-#     return test_loss
-
 # Test dataset DataLoader
 test_dataloader = DataLoader(test_dataset, batch_size=20, shuffle=False)
 
-# # Evaluate the model on the test dataset
-# test_loss = evaluate(loaded_model, test_dataloader, criterion, device)
-# print(f"Test Loss: {test_loss:.4f}")
 
 from sklearn.metrics import r2_score
 
@@ -446,9 +295,6 @@ def calculate_r2(model, test_dataloader, device):
     # Compute R²
     return r2_score(all_hr, all_sr)
 
-# # Calculate R² for the test dataset
-# r2 = calculate_r2(loaded_model, test_dataloader, device)
-# print(f"R² Score: {r2:.4f}")
 
 """# Diffusion"""
 
