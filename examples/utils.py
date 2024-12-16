@@ -111,3 +111,21 @@ def calculate_r2(model, test_dataloader, device):
     # Compute R²
     return r2_score(all_hr, all_sr)
 
+# Dataset definition remains the same
+class ncDataset(Dataset):
+    def __init__(self, data, targets, stations):
+        # Assuming data, targets, and stations are already PyTorch tensors
+        self.data = data
+        self.targets = targets
+        self.stations = stations
+
+    def __getitem__(self, index):
+        x = self.data[index].unsqueeze(0)  # No need for torch.from_numpy()
+        y = self.targets[index].unsqueeze(0)  # Already a tensor
+        z = self.stations[index].unsqueeze(0)  # Already a tensor
+        return x, y, z
+
+    def __len__(self):
+        return len(self.data)
+
+
