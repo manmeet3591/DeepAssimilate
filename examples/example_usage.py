@@ -118,7 +118,7 @@ z_train_patches = stations_image_resized_tensor
 
 x_train_max = x_train_patches.max()
 y_train_max = y_train_patches.max()
-z_train_max = torch.nanmax(z_train_patches)
+z_train_max = torch_nanmax(z_train_patches)
 
 x_train_patches /= x_train_max
 y_train_patches /= y_train_max
