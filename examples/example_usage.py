@@ -322,7 +322,7 @@ optimizer = AdamW(model.parameters(), lr=1e-4)
 criterion = nn.MSELoss()
 
 # Hyperparameters
-num_epochs = 1000
+num_epochs = 1
 print_interval = 10
 patience = 50
 best_val_loss = float('inf')
