@@ -81,51 +81,88 @@ print(test_tensor)
 print(torch.isnan(test_tensor))
 
 
+########################
+import torch
 
-# Dataset definition remains the same
-class ncDataset(Dataset):
-    def __init__(self, data, targets, stations):
-        # Assuming data, targets, and stations are already PyTorch tensors
-        self.data = data
-        self.targets = targets
-        self.stations = stations
+def split_data(x_patches, y_patches, z_patches):
+    # Get total length of the data
+    total_samples = x_patches.shape[0]
 
-    def __getitem__(self, index):
-        x = self.data[index].unsqueeze(0)  # No need for torch.from_numpy()
-        y = self.targets[index].unsqueeze(0)  # Already a tensor
-        z = self.stations[index].unsqueeze(0)  # Already a tensor
-        return x, y, z
+    # Calculate split indices
+    train_end = int(0.6 * total_samples)  # 60% for training
+    val_end = int(0.8 * total_samples)    # 20% for validation, 80% cumulative
 
-    def __len__(self):
-        return len(self.data)
+    # Training data
+    x_train_patches = x_patches[:train_end]
+    y_train_patches = y_patches[:train_end]
+    z_train_patches = z_patches[:train_end]
 
+    # Validation data
+    x_val_patches = x_patches[train_end:val_end]
+    y_val_patches = y_patches[train_end:val_end]
+    z_val_patches = z_patches[train_end:val_end]
 
+    # Test data
+    x_test_patches = x_patches[val_end:]
+    y_test_patches = y_patches[val_end:]
+    z_test_patches = z_patches[val_end:]
 
+    return (x_train_patches, y_train_patches, z_train_patches,
+            x_val_patches, y_val_patches, z_val_patches,
+            x_test_patches, y_test_patches, z_test_patches)
 
+# Normalize the input tensors
 x_train_patches = input_image_4x_upscaled_2x_tensor
 y_train_patches = target_image_2x_tensor
 z_train_patches = stations_image_resized_tensor
 
 x_train_max = x_train_patches.max()
 y_train_max = y_train_patches.max()
-z_train_max = torch_nanmax(z_train_patches)
+z_train_max = torch.nanmax(z_train_patches)
+
 x_train_patches /= x_train_max
 y_train_patches /= y_train_max
 z_train_patches /= z_train_max
 
-x_val_patches = x_train_patches[60:80]
-y_val_patches = y_train_patches[60:80]
-z_val_patches = z_train_patches[60:80]
+# Split the data into train, val, and test
+(x_train_patches, y_train_patches, z_train_patches,
+ x_val_patches, y_val_patches, z_val_patches,
+ x_test_patches, y_test_patches, z_test_patches) = split_data(
+    x_train_patches, y_train_patches, z_train_patches
+)
 
-x_test_patches = x_train_patches[80:]
-y_test_patches = y_train_patches[80:]
-z_test_patches = z_train_patches[80:]
+# Verify the shapes
+print(f"Train shapes: {x_train_patches.shape}, {y_train_patches.shape}, {z_train_patches.shape}")
+print(f"Val shapes: {x_val_patches.shape}, {y_val_patches.shape}, {z_val_patches.shape}")
+print(f"Test shapes: {x_test_patches.shape}, {y_test_patches.shape}, {z_test_patches.shape}")
 
-x_train_patches = x_train_patches[:60]
-y_train_patches = y_train_patches[:60]
-z_train_patches = z_train_patches[:60]
+########################
 
-torch.nansum(stations_image_resized_tensor)
+
+# x_train_patches = input_image_4x_upscaled_2x_tensor
+# y_train_patches = target_image_2x_tensor
+# z_train_patches = stations_image_resized_tensor
+
+# x_train_max = x_train_patches.max()
+# y_train_max = y_train_patches.max()
+# z_train_max = torch_nanmax(z_train_patches)
+# x_train_patches /= x_train_max
+# y_train_patches /= y_train_max
+# z_train_patches /= z_train_max
+
+# x_val_patches = x_train_patches[60:80]
+# y_val_patches = y_train_patches[60:80]
+# z_val_patches = z_train_patches[60:80]
+
+# x_test_patches = x_train_patches[80:]
+# y_test_patches = y_train_patches[80:]
+# z_test_patches = z_train_patches[80:]
+
+# x_train_patches = x_train_patches[:60]
+# y_train_patches = y_train_patches[:60]
+# z_train_patches = z_train_patches[:60]
+
+# torch.nansum(stations_image_resized_tensor)
 
 # Dataset Preparation
 train_dataset = ncDataset(x_train_patches, y_train_patches, z_train_patches)
