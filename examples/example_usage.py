@@ -50,7 +50,45 @@ stations_image_resized = nearest_neighbor_resize_with_nan(stations_image, (targe
 # Until this point all the data is in numpy
 def train_assimilate(input_image_4x_upscaled_2x, target_image_2x, stations_image_resized):
     import torch
-    from utils import *
+    """# Diffusion"""
+    
+    import torch
+    import torch.nn as nn
+    from torch.utils.data import DataLoader, Dataset
+    from torch.optim import AdamW
+    from diffusers import DDPMScheduler, UNet2DModel
+    from copy import deepcopy
+    
+    class ncDataset(Dataset):
+        def __init__(self, data, targets, targets_z):
+            self.data = data
+            self.targets = targets
+            self.targets_z = targets_z
+    
+        def __getitem__(self, index):
+            # Convert to tensor if the data is not already a tensor
+            x = self.data[index]
+            if not isinstance(x, torch.Tensor):
+                x = torch.from_numpy(x).unsqueeze(0)
+            else:
+                x = x.unsqueeze(0)
+    
+            y = self.targets[index]
+            if not isinstance(y, torch.Tensor):
+                y = torch.from_numpy(y).unsqueeze(0)
+            else:
+                y = y.unsqueeze(0)
+    
+            z = self.targets_z[index]
+            if not isinstance(z, torch.Tensor):
+                z = torch.from_numpy(z).unsqueeze(0)
+            else:
+                z = z.unsqueeze(0)
+    
+            return x, y, z
+    
+        def __len__(self):
+            return len(self.data)
     print("Resized stations image shape:", stations_image_resized.shape)
     
     # Convert the images to PyTorch tensors (multi-channel)
@@ -183,45 +221,7 @@ def train_assimilate(input_image_4x_upscaled_2x, target_image_2x, stations_image
     
     
     
-    """# Diffusion"""
     
-    import torch
-    import torch.nn as nn
-    from torch.utils.data import DataLoader, Dataset
-    from torch.optim import AdamW
-    from diffusers import DDPMScheduler, UNet2DModel
-    from copy import deepcopy
-    
-    class ncDataset(Dataset):
-        def __init__(self, data, targets, targets_z):
-            self.data = data
-            self.targets = targets
-            self.targets_z = targets_z
-    
-        def __getitem__(self, index):
-            # Convert to tensor if the data is not already a tensor
-            x = self.data[index]
-            if not isinstance(x, torch.Tensor):
-                x = torch.from_numpy(x).unsqueeze(0)
-            else:
-                x = x.unsqueeze(0)
-    
-            y = self.targets[index]
-            if not isinstance(y, torch.Tensor):
-                y = torch.from_numpy(y).unsqueeze(0)
-            else:
-                y = y.unsqueeze(0)
-    
-            z = self.targets_z[index]
-            if not isinstance(z, torch.Tensor):
-                z = torch.from_numpy(z).unsqueeze(0)
-            else:
-                z = z.unsqueeze(0)
-    
-            return x, y, z
-    
-        def __len__(self):
-            return len(self.data)
     
     def train(model, train_dataloader, val_dataloader, criterion, optimizer, scheduler, device):
         model.train()
