@@ -406,12 +406,12 @@ def train_assimilate(input_image_4x_upscaled_2x, target_image_2x, stations_image
             break
     
     print("Training Complete.")
+    torch.save(model.state_dict(), diffusion_model_save_path)
+    print(f"Final model saved to {diffusion_model_save_path}")
     return True
 
 train_assimilate(input_image_4x_upscaled_2x, target_image_2x, stations_image_resized)
 # Save the final model after training
-torch.save(model.state_dict(), diffusion_model_save_path)
-print(f"Final model saved to {diffusion_model_save_path}")
 
 # Load the trained model
 loaded_diffusion_model = UNet2DModel(
