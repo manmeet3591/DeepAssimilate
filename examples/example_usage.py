@@ -217,12 +217,6 @@ def train_assimilate(input_image_4x_upscaled_2x, target_image_2x, stations_image
     # Test dataset DataLoader
     test_dataloader = DataLoader(test_dataset, batch_size=20, shuffle=False)
     
-    
-    
-    
-    
-    
-    
     def train(model, train_dataloader, val_dataloader, criterion, optimizer, scheduler, device):
         model.train()
         train_loss = 0.0
@@ -420,6 +414,8 @@ from diffusers import DDPMScheduler, UNet2DModel
 from copy import deepcopy
 # Load the trained model
 patch_size = 32
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 loaded_diffusion_model = UNet2DModel(
     sample_size=patch_size,
     in_channels=2,
