@@ -179,30 +179,30 @@ def train_assimilate(input_image_4x_upscaled_2x, target_image_2x, stations_image
     stations_image_resized_tensor = torch.tensor(stations_image_resized, dtype=torch.float32)
     
     # Verify the shapes of the tensors
-    print(f"Input tensor shape: {input_image_4x_upscaled_2x_tensor.shape}")
-    print(f"Target tensor shape: {target_image_2x_tensor.shape}")
-    print(f"Stations tensor shape: {stations_image_resized_tensor.shape}")
+    # print(f"Input tensor shape: {input_image_4x_upscaled_2x_tensor.shape}")
+    # print(f"Target tensor shape: {target_image_2x_tensor.shape}")
+    # print(f"Stations tensor shape: {stations_image_resized_tensor.shape}")
     
-    print(np.isnan(stations_image).sum())
+    # print(np.isnan(stations_image).sum())
     
-    print(np.isnan(stations_image_resized).sum())
+    # print(np.isnan(stations_image_resized).sum())
     
-    print(stations_image.shape)
-    print(stations_image_resized.shape)
+    # print(stations_image.shape)
+    # print(stations_image_resized.shape)
     
-    print(torch.isnan(stations_image_resized_tensor).sum())
-    
-    
+    # print(torch.isnan(stations_image_resized_tensor).sum())
     
     
-    print(torch.nansum(stations_image_resized_tensor[0,:,:]))
     
     
-    print(stations_image_resized_tensor.dtype)
+    # print(torch.nansum(stations_image_resized_tensor[0,:,:]))
+    
+    
+    # print(stations_image_resized_tensor.dtype)
     
     test_tensor = torch.tensor([[float('nan'), 1.0], [0.5, float('nan')]])
-    print(test_tensor)
-    print(torch.isnan(test_tensor))
+    # print(test_tensor)
+    # print(torch.isnan(test_tensor))
     
     
     ########################
