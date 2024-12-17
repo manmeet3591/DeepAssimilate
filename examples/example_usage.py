@@ -424,6 +424,12 @@ loaded_diffusion_model = UNet2DModel(
     block_out_channels=(64, 128, 256, 512),
 ).to(device)
 
+# Scheduler setup
+scheduler = DDPMScheduler(
+    num_train_timesteps=1000,  # Number of diffusion steps
+    beta_schedule="linear"
+)
+
 # Load weights into the model
 loaded_diffusion_model.load_state_dict(torch.load(diffusion_model_save_path))
 loaded_diffusion_model.eval()
