@@ -49,6 +49,7 @@ stations_image_resized = nearest_neighbor_resize_with_nan(stations_image, (targe
 
 # Until this point all the data is in numpy
 def train_assimilate(input_image_4x_upscaled_2x, target_image_2x, stations_image_resized):
+    import torch
     print("Resized stations image shape:", stations_image_resized.shape)
     
     # Convert the images to PyTorch tensors (multi-channel)
