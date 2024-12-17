@@ -429,8 +429,8 @@ loaded_diffusion_model.load_state_dict(torch.load(diffusion_model_save_path))
 loaded_diffusion_model.eval()
 print(f"Model loaded from {diffusion_model_save_path}")
 
-# Set model to evaluation mode
-model.eval()
+# # Set model to evaluation mode
+# model.eval()
 
 # Collect all predictions
 all_inputs = []
@@ -457,7 +457,7 @@ with torch.no_grad():
             x_t = torch.cat((noisy_images, lr), dim=1)
 
             # Predict noise using the model
-            noise_pred = model(x_t, t).sample
+            noise_pred = loaded_model(x_t, t).sample
 
             # Perform the scheduler step
             noisy_images = scheduler.step(noise_pred, t, noisy_images).prev_sample
