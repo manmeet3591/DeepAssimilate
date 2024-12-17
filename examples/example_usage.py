@@ -419,6 +419,7 @@ from torch.optim import AdamW
 from diffusers import DDPMScheduler, UNet2DModel
 from copy import deepcopy
 # Load the trained model
+patch_size = 32
 loaded_diffusion_model = UNet2DModel(
     sample_size=patch_size,
     in_channels=2,
