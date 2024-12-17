@@ -414,7 +414,7 @@ from diffusers import DDPMScheduler, UNet2DModel
 from copy import deepcopy
 # Load the trained model
 patch_size = 32
-
+diffusion_model_save_path = "best_diffusion_model.pth"
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 loaded_diffusion_model = UNet2DModel(
     sample_size=patch_size,
