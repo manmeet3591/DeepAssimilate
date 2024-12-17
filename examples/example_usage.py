@@ -412,7 +412,12 @@ def train_assimilate(input_image_4x_upscaled_2x, target_image_2x, stations_image
 
 train_assimilate(input_image_4x_upscaled_2x, target_image_2x, stations_image_resized)
 # Save the final model after training
-
+import torch
+import torch.nn as nn
+from torch.utils.data import DataLoader, Dataset
+from torch.optim import AdamW
+from diffusers import DDPMScheduler, UNet2DModel
+from copy import deepcopy
 # Load the trained model
 loaded_diffusion_model = UNet2DModel(
     sample_size=patch_size,
