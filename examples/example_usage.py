@@ -33,9 +33,6 @@ input_image_4x_upscaled_2x = bicubic_upscale(input_image_4x, (original_image.sha
 # Target Image: 2x downscaled
 target_image_2x = bicubic_downscale(original_image, 2)
 
-
-
-
 # Create "stations" image (ground truth with 90% missing data)
 stations_image, mask = create_stations_image(original_image, gap_ratio=0.99)
 
