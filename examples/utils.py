@@ -515,34 +515,7 @@ def assimilate(input_image_4x_upscaled_2x):
     target_image_2x_tensor = torch.tensor(target_image_2x, dtype=torch.float32)
     stations_image_resized_tensor = torch.tensor(stations_image_resized, dtype=torch.float32)
     
-    # Verify the shapes of the tensors
-    # print(f"Input tensor shape: {input_image_4x_upscaled_2x_tensor.shape}")
-    # print(f"Target tensor shape: {target_image_2x_tensor.shape}")
-    # print(f"Stations tensor shape: {stations_image_resized_tensor.shape}")
-    
-    # print(np.isnan(stations_image).sum())
-    
-    # print(np.isnan(stations_image_resized).sum())
-    
-    # print(stations_image.shape)
-    # print(stations_image_resized.shape)
-    
-    # print(torch.isnan(stations_image_resized_tensor).sum())
-    
-    
-    
-    
-    # print(torch.nansum(stations_image_resized_tensor[0,:,:]))
-    
-    
-    # print(stations_image_resized_tensor.dtype)
-    
-    test_tensor = torch.tensor([[float('nan'), 1.0], [0.5, float('nan')]])
-    # print(test_tensor)
-    # print(torch.isnan(test_tensor))
-    
-    
-    ########################
+        ########################
     import torch
     
     def split_data(x_patches, y_patches, z_patches):
@@ -574,8 +547,8 @@ def assimilate(input_image_4x_upscaled_2x):
     
     # Normalize the input tensors
     x_train_patches = input_image_4x_upscaled_2x_tensor
-    y_train_patches = target_image_2x_tensor
-    z_train_patches = stations_image_resized_tensor
+    y_train_patches = input_image_4x_upscaled_2x_tensor #target_image_2x_tensor
+    z_train_patches = input_image_4x_upscaled_2x_tensor #stations_image_resized_tensor
     
     x_train_max = x_train_patches.max()
     y_train_max = y_train_patches.max()
@@ -600,30 +573,6 @@ def assimilate(input_image_4x_upscaled_2x):
     ########################
     
     
-    # x_train_patches = input_image_4x_upscaled_2x_tensor
-    # y_train_patches = target_image_2x_tensor
-    # z_train_patches = stations_image_resized_tensor
-    
-    # x_train_max = x_train_patches.max()
-    # y_train_max = y_train_patches.max()
-    # z_train_max = torch_nanmax(z_train_patches)
-    # x_train_patches /= x_train_max
-    # y_train_patches /= y_train_max
-    # z_train_patches /= z_train_max
-    
-    # x_val_patches = x_train_patches[60:80]
-    # y_val_patches = y_train_patches[60:80]
-    # z_val_patches = z_train_patches[60:80]
-    
-    # x_test_patches = x_train_patches[80:]
-    # y_test_patches = y_train_patches[80:]
-    # z_test_patches = z_train_patches[80:]
-    
-    # x_train_patches = x_train_patches[:60]
-    # y_train_patches = y_train_patches[:60]
-    # z_train_patches = z_train_patches[:60]
-    
-    # torch.nansum(stations_image_resized_tensor)
     
     # Dataset Preparation
     train_dataset = ncDataset(x_train_patches, y_train_patches, z_train_patches)
