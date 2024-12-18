@@ -12,7 +12,6 @@ from deepassimilate.core import *
 
 train_assimilate(input_image_4x_upscaled_2x, target_image_2x, stations_image_resized)
 
-
 all_predictions = assimilate(input_image_4x_upscaled_2x)
 
 ```
