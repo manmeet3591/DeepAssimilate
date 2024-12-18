@@ -452,7 +452,7 @@ def train_assimilate(input_image_4x_upscaled_2x, target_image_2x, stations_image
     criterion = nn.MSELoss()
     
     # Hyperparameters
-    num_epochs = 1
+    num_epochs = 1000
     print_interval = 10
     patience = 50
     best_val_loss = float('inf')
