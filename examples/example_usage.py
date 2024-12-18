@@ -17,8 +17,8 @@ import torch.optim as optim
 from copy import deepcopy
 from sklearn.metrics import r2_score
 
-
-from utils import *
+from deepassimilate.core import *
+#from utils import *
 
 # Generate random input image with multiple channels
 seed = 42
