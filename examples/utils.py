@@ -508,12 +508,12 @@ def assimilate(input_image_4x_upscaled_2x):
     from diffusers import DDPMScheduler, UNet2DModel
     from copy import deepcopy
     
-    print("Resized stations image shape:", stations_image_resized.shape)
+    # print("Resized stations image shape:", stations_image_resized.shape)
     
     # Convert the images to PyTorch tensors (multi-channel)
     input_image_4x_upscaled_2x_tensor = torch.tensor(input_image_4x_upscaled_2x, dtype=torch.float32)
-    target_image_2x_tensor = torch.tensor(target_image_2x, dtype=torch.float32)
-    stations_image_resized_tensor = torch.tensor(stations_image_resized, dtype=torch.float32)
+    target_image_2x_tensor = input_image_4x_upscaled_2x_tensor #torch.tensor(target_image_2x, dtype=torch.float32)
+    stations_image_resized_tensor = input_image_4x_upscaled_2x_tensor #torch.tensor(stations_image_resized, dtype=torch.float32)
     
         ########################
     import torch
