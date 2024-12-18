@@ -16,7 +16,7 @@ from torchvision import transforms
 import torch.optim as optim
 from copy import deepcopy
 from sklearn.metrics import r2_score
-
+import sys
 from deepassimilate.core import *
 #from utils import *
 
@@ -33,8 +33,6 @@ input_image_4x_upscaled_2x = bicubic_upscale(input_image_4x, (original_image.sha
 # Target Image: 2x downscaled
 target_image_2x = bicubic_downscale(original_image, 2)
 
-print("Input image (4x upscaled to 2x) shape:", input_image_4x_upscaled_2x.shape)
-print("Target image (2x downscaled) shape:", target_image_2x.shape)
 
 
 
@@ -46,8 +44,10 @@ stations_image, mask = create_stations_image(original_image, gap_ratio=0.99)
 # Apply the new resizing function
 stations_image_resized = nearest_neighbor_resize_with_nan(stations_image, (target_image_2x.shape[1], target_image_2x.shape[2]))
 
-
-
+print("Input image (4x upscaled to 2x) shape:", input_image_4x_upscaled_2x.shape)
+print("Target image (2x downscaled) shape:", target_image_2x.shape)
+print("Station image resized shape:", stations_image_resized.shape)
+sys.exit()
 train_assimilate(input_image_4x_upscaled_2x, target_image_2x, stations_image_resized)
 
 
