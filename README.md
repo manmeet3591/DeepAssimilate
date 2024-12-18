@@ -8,10 +8,13 @@ pip install .
 ```
 ## Usage
 ```
-from deepassimilate import DataAssimilation
+from deepassimilate.core import *
 
-assimilator = DataAssimilation()
-result = assimilator.assimilate(gridded_data, station_data)
+train_assimilate(input_image_4x_upscaled_2x, target_image_2x, stations_image_resized)
+
+
+all_predictions = assimilate(input_image_4x_upscaled_2x)
+
 ```
 ## Literature Review
 
