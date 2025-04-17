@@ -4,7 +4,7 @@ This package integrates station data into gridded data using deep learning techn
 
 ## Installation
 ```bash
-pip install .
+pip install DeepAssimilate
 ```
 ## Usage
 ```
