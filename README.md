@@ -5,6 +5,8 @@ This package integrates station data into gridded data using deep learning techn
 ## Installation
 ```bash
 pip install DeepAssimilate
+or
+conda install nvnsudharsan::deepassimilate
 ```
 ## Usage
 ```
