@@ -8,6 +8,16 @@ from .utils import (
     bicubic_upscale,
     nearest_neighbor_resize_with_nan
 )
+from .manshausen_da import (
+    train_diffusion_model,
+    sample_with_observations,
+    corrected_noise,
+    alpha,
+    mu,
+    sigma,
+    DiffusionDataset
+)
+from .deepassimilate import deepassimilate, ManshausenDA
 
 __all__ = [
     "ncDataset",
@@ -18,4 +28,13 @@ __all__ = [
     "bicubic_downscale",
     "bicubic_upscale",
     "nearest_neighbor_resize_with_nan",
+    "train_diffusion_model",
+    "sample_with_observations",
+    "corrected_noise",
+    "alpha",
+    "mu",
+    "sigma",
+    "DiffusionDataset",
+    "deepassimilate",
+    "ManshausenDA",
 ]

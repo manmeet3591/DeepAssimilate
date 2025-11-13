@@ -251,17 +251,15 @@ def train_diffusion_model(
         losses = []
         model.train()
         for batch in train_dataloader:
-            x = batch.to(device)
-            # Map to (-1, 1) for diffusion
-            x = x * 2.0 - 1.0
-            
+            input = batch
+            x = input.to(device)  # Data on the GPU (normalized to [0, 1])
             noise = torch.randn_like(x)
             timesteps = torch.randint(0, num_train_timesteps - 1, (x.shape[0],)).long().to(device)
             noisy_x = noise_scheduler.add_noise(x, noise, timesteps)
-            
-            pred = model(noisy_x, timesteps).sample
-            loss = loss_fn(pred, noise)
-            
+            net_input = noisy_x
+            pred = model(net_input, timesteps).sample
+            loss = loss_fn(pred, noise)  # How close is the output to the noise
+
             loss.backward()
             opt.step()
             opt.zero_grad()
@@ -277,12 +275,13 @@ def train_diffusion_model(
             val_losses = []
             with torch.no_grad():
                 for batch in val_dataloader:
-                    x = batch.to(device)
-                    x = x * 2.0 - 1.0
+                    input = batch
+                    x = input.to(device)
                     noise = torch.randn_like(x)
                     timesteps = torch.randint(0, num_train_timesteps - 1, (x.shape[0],)).long().to(device)
                     noisy_x = noise_scheduler.add_noise(x, noise, timesteps)
-                    pred = model(noisy_x, timesteps).sample
+                    net_input = noisy_x
+                    pred = model(net_input, timesteps).sample
                     loss = loss_fn(pred, noise)
                     val_losses.append(loss.item())
             
@@ -354,34 +353,34 @@ def sample_with_observations(
     
     noise_scheduler = HeunDiscreteScheduler(num_train_timesteps=num_train_timesteps)
     
-    # Normalize observations to [0, 1]
+    # Normalize observations to [0, 1] (matching training normalization)
     obs_norm = (observations - data_min) / (data_max - data_min)
     
-    # Handle different input shapes
-    if obs_norm.ndim == 2:  # [H, W]
-        obs_norm = obs_norm[np.newaxis, ...]  # [1, H, W]
+    # Handle different input shapes - match notebook Cell 29 logic
+    if isinstance(obs_norm, np.ndarray):
+        obs_tensor = torch.from_numpy(obs_norm).float().to(device)
+    else:
+        obs_tensor = obs_norm.to(device)
     
-    if obs_norm.ndim == 3 and obs_norm.shape[0] == 1:  # [1, H, W]
-        obs_norm = obs_norm[np.newaxis, ...]  # [1, 1, H, W]
-    
-    # Convert to tensor
-    obs_tensor = torch.from_numpy(obs_norm).float().to(device)
-    if obs_tensor.ndim == 3:
-        obs_tensor = obs_tensor.unsqueeze(1)  # Add channel dimension
-    
-    # Map observations from [0, 1] to [-1, 1] to match training
-    obs_tensor = obs_tensor * 2.0 - 1.0
+    # Match notebook Cell 29 shape handling
+    if obs_tensor.ndim == 2:  # [H, W]
+        samples = [obs_tensor.unsqueeze(0)]  # list with one [1, H, W]
+    elif obs_tensor.ndim == 3:  # [N, H, W]
+        samples = [x.unsqueeze(0) for x in obs_tensor]  # make each [1, H, W]
+    else:
+        samples = [obs_tensor]  # already batched?
     
     pred_patches = []
     
-    for i in range(obs_tensor.shape[0]):
-        # Get single observation
-        obs = obs_tensor[i:i+1]  # [1, C, H, W]
+    for batch in samples:
+        # Ensure shape [B, C, H, W] with C=1 (matching notebook)
+        if batch.ndim == 3:
+            batch = batch.unsqueeze(1)  # [1, 1, H, W]
         
-        # Start from noise
-        sample = torch.randn_like(obs)
+        # Start from noise (matching notebook Cell 29)
+        sample = torch.randn_like(batch)  # x_T
         
-        # Set timesteps
+        # IMPORTANT: reset scheduler for this sample (matching notebook)
         noise_scheduler.set_timesteps(num_inference_steps, device=sample.device)
         
         # Normalize timesteps to [0, 1] for alpha/mu/sigma functions
@@ -389,21 +388,24 @@ def sample_with_observations(
         
         for idx, t in enumerate(tqdm(noise_scheduler.timesteps, desc="Sampling steps")):
             with torch.no_grad():
-                t_in = t.expand(sample.shape[0])
-                residual = model(sample, t_in).sample
-            
-            out = noise_scheduler.step(residual, t, sample)
+                # Some models expect a per-batch timestep tensor; expand if needed (matching notebook)
+                t_in = t if isinstance(t, torch.Tensor) else torch.tensor(t, device=sample.device)
+                t_in = t_in.expand(sample.shape[0])  # [B]
+                
+                residual = model(sample, t_in).sample  # predict noise
+            out = noise_scheduler.step(residual, t, sample)  # pass *current* sample
             sample = out.prev_sample
             
-            # Apply observation correction
+            # Apply observation correction (Manshausen DA step) - matching notebook Cell 45
+            # Normalize timestep to [0, 1] for alpha/mu/sigma functions
             t_norm = timesteps_normalized[idx]
-            sample = corrected_noise(sample, obs, t_norm, std=std, gamma=gamma, eta=eta)
+            # Observations are already normalized to [0, 1] and in same shape as sample
+            # (batch is the normalized observations)
+            sample = corrected_noise(sample, batch, t_norm, std=std, gamma=gamma, eta=eta)
         
-        # Map back from [-1, 1] to [0, 1]
-        sample = (sample + 1.0) / 2.0
         pred_patches.append(sample.cpu().detach().numpy())
     
-    # Denormalize from [0, 1] to original scale
+    # Denormalize from [0, 1] to original scale (matching notebook Cell 30)
     predicted = np.concatenate(pred_patches, axis=0)
     predicted = predicted * (data_max - data_min) + data_min
     

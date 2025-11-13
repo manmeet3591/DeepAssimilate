@@ -4,9 +4,11 @@ This document describes the integration of the Manshausen et al. diffusion-based
 
 ## Overview
 
-The Manshausen approach implements zero-shot data assimilation using diffusion models. It:
-1. Trains a diffusion model (UNet2DModel) on gridded data
+The Manshausen approach implements zero-shot data assimilation using diffusion models from the `diffusers` library. It:
+1. Trains a diffusion model (UNet2DModel from diffusers) on gridded data using HeunDiscreteScheduler
 2. Integrates sparse observations during inference using a likelihood-based correction step
+
+The implementation uses the `diffusers` library (specifically `HeunDiscreteScheduler` and `UNet2DModel`) exactly as shown in the notebook, matching the original approach.
 
 ## What Was Added
 
