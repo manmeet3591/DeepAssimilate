@@ -1,0 +1,28 @@
+# deepassimilate: Requirements file
+# 
+# Core dependencies for training diffusion models and performing generative data assimilation
+
+# Core ML/DL frameworks
+torch>=1.12.0
+diffusers>=0.21.0
+numpy>=1.21.0
+
+# Data handling (for weather/ocean datasets)
+xarray>=2022.3.0
+netcdf4>=1.6.0  # Backend for xarray to read NetCDF files
+
+# Visualization and utilities
+matplotlib>=3.5.0
+tqdm>=4.64.0
+
+# Optional but recommended for examples
+torchvision>=0.13.0  # For visualization utilities in notebooks
+
+# Development and testing (optional)
+pytest>=7.0.0
+tensorboard>=2.10.0  # For training visualization
+
+# Additional utilities (optional, for advanced workflows)
+scikit-learn>=1.0.0  # For some evaluation metrics
+opencv-python>=4.6.0  # For image processing utilities
+
