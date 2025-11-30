@@ -6,6 +6,7 @@
 torch>=1.12.0
 diffusers>=0.21.0
 huggingface-hub>=0.34.0,<1.0  # Required by diffusers - must be <1.0 to avoid version conflicts
+protobuf>=3.20.0,<4.0  # Fix for MessageFactory errors in Colab
 numpy>=1.21.0
 
 # Data handling (for weather/ocean datasets)
