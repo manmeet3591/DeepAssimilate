@@ -21,6 +21,9 @@ from .datasets import WeatherDataset, GriddedDataset
 # Import scheduler utilities
 from .schedulers import build_scheduler, build_distilled_scheduler
 
+# Import model utilities
+from .models import build_unet_2d
+
 # Version
 __version__ = "0.1.0"
 
@@ -40,4 +43,5 @@ __all__ = [
     "GriddedDataset",
     "build_scheduler",
     "build_distilled_scheduler",
+    "build_unet_2d",
 ]
