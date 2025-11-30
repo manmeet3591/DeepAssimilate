@@ -279,4 +279,4 @@ Notebooks demonstrating:
 
 ## 📝 License
 
-MIT License 
+GNU General Public License 
