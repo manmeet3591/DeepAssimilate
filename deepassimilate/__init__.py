@@ -15,6 +15,9 @@ from .assimilation.observation_ops import ObservationOperator, IdentityObservati
 # Import utility functions
 from .utils import get_device, get_device_info, print_device_info
 
+# Import dataset utilities
+from .datasets import WeatherDataset, GriddedDataset
+
 # Version
 __version__ = "0.1.0"
 
@@ -30,4 +33,6 @@ __all__ = [
     "get_device",
     "get_device_info",
     "print_device_info",
+    "WeatherDataset",
+    "GriddedDataset",
 ]
