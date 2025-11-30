@@ -18,6 +18,9 @@ from .utils import get_device, get_device_info, print_device_info
 # Import dataset utilities
 from .datasets import WeatherDataset, GriddedDataset
 
+# Import scheduler utilities
+from .schedulers import build_scheduler, build_distilled_scheduler
+
 # Version
 __version__ = "0.1.0"
 
@@ -35,4 +38,6 @@ __all__ = [
     "print_device_info",
     "WeatherDataset",
     "GriddedDataset",
+    "build_scheduler",
+    "build_distilled_scheduler",
 ]
