@@ -268,7 +268,7 @@ Support for:
 
 Notebooks demonstrating:
 - Training diffusion priors on weather/ocean datasets
-- Running GDA on masked observations
+- Running DA on masked observations
 - Inspecting DA gradients and likelihood contributions
 - Implementing custom timesteps
 - Using physical constraints in DA
