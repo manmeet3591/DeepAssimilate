@@ -1,6 +1,6 @@
 # deepassimilate
 
-**deepassimilate** is a modular framework for training **unconditional diffusion models** and applying them to **generative data assimilation (GDA)**.  
+**deepassimilate** is a modular framework for training **unconditional diffusion models** and applying them to **generative data assimilation (DA)**.  
 It is built on **PyTorch** and **Hugging Face Diffusers**, and is designed for scientific machine learning, inverse problems, physical sciences, weather/climate modeling, and uncertainty quantification workflows.
 
 The library follows a simple two-step paradigm:
