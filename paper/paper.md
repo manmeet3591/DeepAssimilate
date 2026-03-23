@@ -9,7 +9,7 @@ tags:
   - machine learning
 authors:
   - name: Manmeet Singh
-    orcid: 0000-0000-0000-0000
+    orcid: 0000-0002-3374-7149
     corresponding: true
     affiliation: 1
   - name: Alexandros Matakos
