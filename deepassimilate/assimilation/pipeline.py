@@ -1,87 +1,89 @@
 # deepassimilate/assimilation/pipeline.py
-from typing import Optional
-import torch
+"""High-level API for score-based data assimilation."""
 
-from ..schedulers import build_distilled_scheduler
-from .observation_ops import ObservationOperator, IdentityObservationOperator
-from .da_posterior import DAConfig, corrected_sample_step
+from typing import Callable, Optional
+
+import torch
+from torch import Tensor
+
+from .score import SDAConfig, score_based_assimilation
+from .observation_ops import ObservationOperator
 
 
 def run_data_assimilation(
     model,
     scheduler,
-    observations: torch.Tensor,
-    obs_operator: Optional[ObservationOperator] = None,
+    observations: Tensor,
+    obs_mask: Optional[Tensor] = None,
+    obs_operator: Optional[Callable[[Tensor], Tensor]] = None,
     n_samples: int = 1,
-    da_cfg: Optional[DAConfig] = None,
-    distilled_num_steps: Optional[int] = None,
+    obs_noise_std: float = 0.5,
+    gamma: float = 1e-3,
+    num_inference_steps: int = 50,
+    guidance_scale: float = 1.0,
+    corrections: int = 0,
     device: Optional[str] = None,
-):
-    """
-    High-level Manshausen-style generative data assimilation.
+    seed: Optional[int] = None,
+) -> Tensor:
+    """One-liner data assimilation using score-based diffusion.
+
+    Combines an unconditional diffusion prior with sparse observations
+    to produce posterior samples (Manshausen et al. 2024).
 
     Args:
-        model: trained unconditional diffusion model (UNet2DModel).
-        scheduler: base scheduler used in training.
-        observations: [B, C, H, W] tensor of observations (normalized like training data).
-        obs_operator: ObservationOperator mapping state -> observation. Defaults to identity.
-        n_samples: number of posterior samples per observation.
-        da_cfg: DAConfig with DA hyperparameters.
-        distilled_num_steps: if not None, how many inference steps to use
-                             (noise-scheduler-only 'distillation').
-        device: torch device string.
+        model: Trained unconditional diffusion model (e.g. UNet2DModel).
+        scheduler: Diffusers noise scheduler used during training.
+        observations: [B, C, H, W] tensor. Use NaN for missing values.
+        obs_mask: [B, C, H, W] boolean mask (True=observed). If None,
+            inferred from non-NaN values in observations.
+        obs_operator: Callable H(x) or ObservationOperator mapping state -> obs space.
+        n_samples: Number of posterior samples per observation.
+        obs_noise_std: Observation noise std (normalized data space).
+        gamma: Likelihood regularization parameter.
+        num_inference_steps: Denoising steps.
+        guidance_scale: Multiplier on likelihood gradient.
+        corrections: Langevin corrector steps (0=none).
+        device: Device string (auto-detected if None).
+        seed: Random seed for reproducibility.
 
     Returns:
-        analysis_samples: [B * n_samples, C, H, W] tensor of posterior samples.
+        [B * n_samples, C, H, W] posterior (assimilated) samples.
+
+    Example:
+        >>> import deepassimilate as da
+        >>> result = da.run_data_assimilation(
+        ...     model=model,
+        ...     scheduler=scheduler,
+        ...     observations=obs_with_nans,
+        ...     obs_noise_std=0.5,
+        ...     gamma=1e-3,
+        ... )
     """
-    if device is None:
-        device = "cuda" if torch.cuda.is_available() else "cpu"
+    if obs_mask is None:
+        obs_mask = ~torch.isnan(observations)
 
-    da_cfg = da_cfg or DAConfig()
-    obs_operator = obs_operator or IdentityObservationOperator()
+    # Unwrap ObservationOperator to callable
+    if isinstance(obs_operator, ObservationOperator):
+        obs_op_fn = obs_operator.forward
+    else:
+        obs_op_fn = obs_operator
 
-    model = model.to(device)
-    model.eval()
-
-    observations = observations.to(device)
-    B, C, H, W = observations.shape
-
-    # Expand observations if we want multiple samples per obs
-    if n_samples > 1:
-        observations = observations.repeat_interleave(n_samples, dim=0)
-    batch_size = observations.shape[0]
-
-    # Scheduler-only "distillation"
-    scheduler = build_distilled_scheduler(scheduler, distilled_num_steps)
-    timesteps = scheduler.timesteps
-
-    # Initialize samples from prior at highest noise (standard Gaussian)
-    samples = torch.randn(
-        (batch_size, C, H, W),
-        device=device,
+    cfg = SDAConfig(
+        obs_noise_std=obs_noise_std,
+        gamma=gamma,
+        num_inference_steps=num_inference_steps,
+        guidance_scale=guidance_scale,
+        corrections=corrections,
     )
 
-    # Diffusion + DA loop
-    for i, t in enumerate(timesteps):
-        t_batch = torch.full((batch_size,), t, device=device, dtype=torch.long)
-
-        # Prior diffusion step (no gradients needed here)
-        with torch.no_grad():
-            model_out = model(samples, t_batch).sample
-            prior_step = scheduler.step(model_out, t_batch, samples)
-            samples = prior_step.prev_sample
-
-        # DA correction step every few diffusion steps
-        # spacing set so we perform ~da_cfg.da_steps corrections over trajectory
-        if da_cfg.da_steps > 0:
-            interval = max(1, len(timesteps) // da_cfg.da_steps)
-            if i % interval == 0:
-                samples = corrected_sample_step(
-                    sample=samples,
-                    t=t_batch,
-                    observation=observations,
-                    obs_operator=obs_operator,
-                    cfg=da_cfg,
-                )
-
-    return samples
+    return score_based_assimilation(
+        model=model,
+        scheduler=scheduler,
+        observations=observations,
+        obs_mask=obs_mask,
+        cfg=cfg,
+        obs_operator=obs_op_fn,
+        n_samples=n_samples,
+        device=device,
+        seed=seed,
+    )

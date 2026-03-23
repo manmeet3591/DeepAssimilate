@@ -26,13 +26,13 @@ def read_requirements():
 
 setup(
     name="deepassimilate",
-    version="0.1.0",
-    author="DeepAssimilate Team",
-    author_email="",  # Update with your email
-    description="Modular framework for training unconditional diffusion models and applying them to generative data assimilation (GDA)",
+    version="0.2.0",
+    author="Manmeet Singh",
+    author_email="",
+    description="Three-step framework for diffusion-based generative data assimilation: architecture search, training, and score-based DA",
     long_description=read_readme(),
     long_description_content_type="text/markdown",
-    url="https://github.com/your-username/DeepAssimilate",  # Update with your repo URL
+    url="https://github.com/manmeet3591/DeepAssimilate",
     packages=find_packages(exclude=["legacy", "tests", "examples"]),
     install_requires=read_requirements(),
     classifiers=[
@@ -45,7 +45,7 @@ setup(
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
-        "License :: OSI Approved :: MIT License",
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
     ],
     python_requires=">=3.8",
