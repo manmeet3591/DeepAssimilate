@@ -25,7 +25,7 @@ authors:
 affiliations:
   - name: Earth, Environmental and Atmospheric Sciences, Western Kentucky University, Bowling Green, KY, USA
     index: 1
-  - name: Skyfora Oy, Helsinki, Finland
+  - name: Skyfora, Finland
     index: 2
   - name: Jackson School of Geosciences, The University of Texas at Austin, Austin, TX, USA
     index: 3
