@@ -14,6 +14,22 @@ Each step is a **one-liner function call**, making diffusion-based DA accessible
 
 Based on [Manshausen et al. (2024)](https://arxiv.org/abs/2406.16947) and NVIDIA PhysicsNeMo ReGen.
 
+### Three-Step Workflow
+
+![DeepAssimilate Workflow](paper/fig_workflow.png)
+
+### Data Assimilation Results
+
+Score-based DA on NCEP 2m temperature with sparse observations (5%, 10%, 50% coverage):
+
+![DA Results](paper/fig_da_results.png)
+
+### Ensemble Uncertainty Estimation
+
+Multiple posterior samples provide calibrated uncertainty estimates:
+
+![Ensemble DA](paper/fig_ensemble.png)
+
 ## Quick Start
 
 ```python
