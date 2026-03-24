@@ -85,24 +85,61 @@ different datasets and observation configurations.
   masks, station locations), with an extensible observation operator interface for
   custom forward models.
 
-# Key Features
+# State of the Field
 
-The score-based data assimilation in `DeepAssimilate` implements the posterior
-sampling approach from @manshausen2024generative. At each denoising step $t$,
-the unconditional sample $x_t$ is corrected using the gradient of the observation
-log-likelihood:
+Data assimilation has a long history in the geosciences. Operational systems such as
+ECMWF's IFS use 4D-Var [@rabier2000ecmwf], while ensemble Kalman filter (EnKF)
+methods are widely used in both atmospheric and ocean modeling [@evensen2003ensemble].
+Open-source DA frameworks like DART [@anderson2009dart] and JEDI [@jedi2023] provide
+flexible toolkits for traditional DA, but they are built around dynamical model
+integration and do not support learned priors.
+
+The intersection of deep learning and DA is an active research frontier. Neural
+network--based approaches range from learning surrogate observation operators
+[@arcucci2021deep] to fully replacing the background model with a generative prior.
+Score-based diffusion models [@song2021scorebased; @ho2020denoising] are particularly
+well suited for this role because they learn the full data distribution rather than a
+point estimate, enabling probabilistic posterior sampling. @manshausen2024generative
+demonstrated that a diffusion model trained on climate reanalysis fields can
+assimilate sparse weather station observations with quality comparable to traditional
+methods while providing calibrated uncertainty quantification.
+
+Despite this promise, no existing Python library provides a turnkey pipeline for
+diffusion-based DA that is accessible to climate scientists without deep ML expertise.
+`DeepAssimilate` fills this gap by combining architecture search, diffusion training,
+and score-based posterior sampling into a single, modular framework built on the
+widely adopted Hugging Face Diffusers ecosystem.
+
+# Software Design
+
+`DeepAssimilate` is organized into three decoupled modules corresponding to the
+workflow steps, each exposing a single high-level function call:
+
+- **`da.search_architecture`** wraps the neural architecture search. It adapts the
+  autonomous experimentation paradigm of @karpathy2026autoresearch: each candidate
+  UNet configuration is trained for a fixed wall-clock budget (default 5 minutes),
+  evaluated on validation MSE, and kept or discarded based on improvement over the
+  current best. Results are logged to a TSV file for reproducibility.
+- **`da.train_unconditional`** handles diffusion model training. It accepts any model
+  architecture and noise scheduler from the Diffusers library, with built-in presets
+  for common configurations (DDPM, EDM). Training supports mixed precision,
+  gradient accumulation, and checkpoint saving.
+- **`da.run_data_assimilation`** performs score-based posterior sampling. At each
+  reverse-diffusion step $t$, the unconditional sample $x_t$ is corrected using the
+  gradient of the observation log-likelihood:
 
 $$x_t \leftarrow x_t + \sigma(t) \cdot \nabla_{x_t} \log p(y \mid x_t)$$
 
 where $p(y \mid x_t) = \mathcal{N}(y; H(x_t), \sigma_{\text{obs}}^2 + \gamma \cdot
 (\sigma(t)/\mu(t))^2)$. The variance term combines observation noise
 $\sigma_{\text{obs}}$ with a time-dependent regularization controlled by $\gamma$,
-ensuring stable conditioning at high noise levels.
+ensuring stable conditioning at high noise levels. The scheduler type (EDM or DDPM)
+is auto-detected, so users need not manage noise schedule internals.
 
-The architecture search module adapts the autonomous experimentation paradigm of
-@karpathy2026autoresearch to the diffusion model setting: each candidate architecture
-is trained for a fixed wall-clock budget (default 5 minutes), evaluated on validation
-MSE, and kept or discarded based on improvement over the current best.
+Observation operators are implemented as callable objects with a common interface.
+Built-in operators include masked gridded observations (random or station-based) and
+linear operators, with an extensible base class for custom forward models. NaN
+values in observation tensors automatically generate the corresponding mask.
 
 # Demonstration
 
@@ -161,6 +198,25 @@ analysis = da.run_data_assimilation(
     obs_noise_std=0.5, gamma=1e-3,
 )
 ```
+
+# Research Impact Statement
+
+`DeepAssimilate` is designed to accelerate research at the intersection of generative
+modeling and geoscientific data assimilation. By lowering the implementation barrier,
+it enables climate and weather researchers to experiment with diffusion-based DA
+without building custom ML pipelines from scratch. Potential applications include
+sparse observation networks (e.g., in data-scarce regions or for historical
+reanalyses), rapid ensemble generation for uncertainty quantification, and benchmarking
+learned priors against traditional DA methods. The modular design also makes it
+suitable for educational use in graduate courses on data assimilation or scientific
+machine learning.
+
+# AI Usage Disclosure
+
+Claude (Anthropic) was used to assist with code development, test writing, and
+drafting of this manuscript. All AI-generated content was reviewed, verified, and
+edited by the authors. The scientific methodology, experimental design, and
+interpretation of results are entirely the work of the authors.
 
 # Acknowledgements
 
